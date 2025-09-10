@@ -1,12 +1,9 @@
 import React from 'react';
-import App from 'next/app';
+import type { AppProps } from 'next/app';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import '../styles/globals.css';
 
-// Infer the props type from the App component for robustness
-type MyAppProps = React.ComponentProps<typeof App>;
-
-function MyApp({ Component, pageProps }: MyAppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ThemeProvider>
       <Component {...pageProps} />
