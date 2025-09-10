@@ -1,10 +1,12 @@
 import React from 'react';
-// FIX: The error indicates `AppProps` is not a named export. Changed to a default import as suggested.
-import type AppProps from 'next/app';
+import App from 'next/app';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import '../styles/globals.css';
 
-function MyApp({ Component, pageProps }: AppProps) {
+// Infer the props type from the App component for robustness
+type MyAppProps = React.ComponentProps<typeof App>;
+
+function MyApp({ Component, pageProps }: MyAppProps) {
   return (
     <ThemeProvider>
       <Component {...pageProps} />
