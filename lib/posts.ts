@@ -1,5 +1,4 @@
-// FIX: Added a triple-slash directive to include Node.js type definitions.
-// This resolves the error on `process.cwd()` by ensuring the `process` global is correctly typed.
+// FIX: Add a triple-slash directive to include Node.js type definitions.
 /// <reference types="node" />
 
 import fs from 'fs';

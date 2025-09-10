@@ -1,5 +1,4 @@
-// FIX: Added reference to Node.js types. This can resolve issues where
-// dependent type definitions (like Next.js) fail to load correctly.
+// FIX: Add triple-slash reference directives for Node.js and Next.js types.
 /// <reference types="node" />
 /// <reference types="next" />
 /// <reference types="next/image-types/global" />

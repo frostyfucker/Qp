@@ -91,7 +91,11 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask,
             },
         });
 
-        const jsonString = response.text.trim();
+        const text = response.text;
+        if (!text) {
+          throw new Error('AI response was empty.');
+        }
+        const jsonString = text.trim();
         const result = JSON.parse(jsonString);
 
         const targetDate = new Date(selectedDate);
