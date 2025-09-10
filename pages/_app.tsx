@@ -1,5 +1,5 @@
 import React from 'react';
-// FIX: Changed to a default import for AppProps to resolve the TypeScript error.
+// FIX: Changed named import to default import for AppProps based on the error message.
 import type AppProps from 'next/app';
 import { ThemeProvider } from '../contexts/ThemeContext';
 import '../styles/globals.css';
