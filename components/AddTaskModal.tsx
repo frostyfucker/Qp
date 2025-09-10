@@ -1,5 +1,5 @@
 import React, { useState, FormEvent, useCallback, useEffect } from 'react';
-import { Subtask, Task } from '../types';
+import { Subtask, Task, Priority } from '../types';
 import { TrashIcon } from './icons/TrashIcon';
 import { GoogleGenAI, Type } from "@google/genai";
 import { SparklesIcon } from './icons/SparklesIcon';
@@ -10,6 +10,7 @@ interface AddTaskModalProps {
   onClose: () => void;
   onAddTask: (taskData: Omit<Task, 'id' | 'status' | 'timeSpent' | 'createdAt'>) => void;
   selectedDate: Date;
+  allTasks: Task[];
 }
 
 // Define the expected JSON schema for the AI response
@@ -26,9 +27,13 @@ const responseSchema = {
             type: Type.ARRAY,
             description: 'A list of sub-tasks or checklist items.',
             items: { type: Type.STRING }
+        },
+        priority: {
+            type: Type.STRING,
+            description: "Task priority: 'High', 'Medium', or 'Low'. Default to 'Medium'."
         }
     },
-    required: ['title', 'dateOffset']
+    required: ['title', 'dateOffset', 'priority']
 };
 
 type ParsedTask = {
@@ -39,9 +44,10 @@ type ParsedTask = {
     endTime: string;
     subtasks: Subtask[];
     date: Date;
+    priority: Priority;
 }
 
-const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask, selectedDate }) => {
+const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask, selectedDate, allTasks }) => {
   const [prompt, setPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +85,15 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask,
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
         
         const today = new Date();
-        const systemInstruction = `You are an intelligent task parsing assistant for a planning app. The user will provide a natural language prompt. Convert it into a structured JSON object that matches the provided schema. Today's date is ${today.toLocaleDateString('en-CA')}. Calculate all dates relative to this. If no date is mentioned, assume today (dateOffset: 0). Always provide values for all fields in the schema, using defaults like empty strings or empty arrays where appropriate.`;
+        const targetDateForPrompt = new Date(selectedDate);
+        targetDateForPrompt.setDate(targetDateForPrompt.getDate() + (prompt.includes('tomorrow') ? 1 : prompt.includes('yesterday') ? -1 : 0));
+        
+        const dailySchedule = allTasks
+          .filter(task => new Date(task.date).toDateString() === targetDateForPrompt.toDateString() && task.startTime && task.endTime)
+          .map(t => `'${t.title}' is scheduled from ${t.startTime} to ${t.endTime}`)
+          .join('; ');
+        
+        const systemInstruction = `You are an intelligent task parsing assistant. Convert natural language into a structured JSON object matching the provided schema. Today's date is ${today.toLocaleDateString('en-CA')}. Calculate dates relative to this. If no date is mentioned, assume today (dateOffset: 0). Today's existing schedule: [${dailySchedule}]. If the user's prompt implies a time or duration, intelligently suggest a 'startTime' and 'endTime' that fits into an open slot in the schedule. Always provide values for all fields in the schema.`;
         
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
@@ -109,6 +123,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask,
             endTime: result.endTime || '',
             subtasks: (result.subtasks || []).map((sub: string) => ({ id: crypto.randomUUID(), title: sub, completed: false })),
             date: targetDate,
+            priority: result.priority || 'Medium',
         });
 
     } catch (e) {
@@ -129,13 +144,23 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask,
           startTime: parsedTask.startTime,
           endTime: parsedTask.endTime,
           subtasks: parsedTask.subtasks,
-          date: parsedTask.date
+          date: parsedTask.date,
+          priority: parsedTask.priority,
+          notifications: !!parsedTask.startTime, // Enable notifications by default if there's a start time
       });
       handleClose();
     }
   };
 
   if (!isOpen) return null;
+  
+  const priorityButtonClasses = (p: Priority) => `
+    px-3 py-1 text-sm rounded-full border transition-colors
+    ${parsedTask?.priority === p 
+        ? 'text-white ' + (p === 'High' ? 'bg-red-500 border-red-500' : p === 'Medium' ? 'bg-amber-500 border-amber-500' : 'bg-sky-500 border-sky-500')
+        : 'bg-transparent text-gray-400 border-gray-600 hover:bg-gray-700'
+    }
+  `;
 
   return (
     <div 
@@ -149,7 +174,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask,
         onClick={e => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold mb-6 text-white flex items-center">
-            {parsedTask ? 'Review Your Task' : 'Add New Task with AI'}
+            {parsedTask ? '🔎 Review Your Task' : '🎉 Add New Task with AI'}
             {!parsedTask && <SparklesIcon className="w-6 h-6 ml-2 text-indigo-400"/>}
         </h2>
         
@@ -193,6 +218,14 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ isOpen, onClose, onAddTask,
                     <label htmlFor="description" className="block text-sm font-medium text-gray-400 mb-1">Description</label>
                     <textarea id="description" rows={2} value={parsedTask.description} onChange={e => setParsedTask({...parsedTask, description: e.target.value})} className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md"></textarea>
                 </div>
+                 <div>
+                    <label className="block text-sm font-medium text-gray-400 mb-2">Priority</label>
+                    <div className="flex space-x-2">
+                        <button type="button" className={priorityButtonClasses('Low')} onClick={() => setParsedTask({...parsedTask, priority: 'Low'})}>Low</button>
+                        <button type="button" className={priorityButtonClasses('Medium')} onClick={() => setParsedTask({...parsedTask, priority: 'Medium'})}>Medium</button>
+                        <button type="button" className={priorityButtonClasses('High')} onClick={() => setParsedTask({...parsedTask, priority: 'High'})}>High</button>
+                    </div>
+                 </div>
                 <div className="flex space-x-4">
                     <div className="w-1/2">
                         <label htmlFor="startTime" className="block text-sm font-medium text-gray-400 mb-1">Start Time</label>

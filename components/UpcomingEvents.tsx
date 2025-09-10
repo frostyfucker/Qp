@@ -30,10 +30,10 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events, onAddEvent, onD
     .sort((a,b) => a.start.getTime() - b.start.getTime());
 
   return (
-    <div className="bg-gray-800 p-6 rounded-2xl shadow-lg">
+    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-white flex items-center">Event Timeline 🎪</h2>
-        <button onClick={onAddEvent} className="flex items-center justify-center w-8 h-8 bg-indigo-600/50 text-white rounded-full hover:bg-indigo-600/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500 transition-all transform hover:scale-105" aria-label="Add new event">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center">Event Timeline 🗓️</h2>
+        <button onClick={onAddEvent} className="flex items-center justify-center w-8 h-8 bg-indigo-600/80 dark:bg-indigo-600/50 text-white rounded-full hover:bg-indigo-600 dark:hover:bg-indigo-600/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 dark:ring-offset-gray-800 focus:ring-indigo-500 transition-all transform hover:scale-105" aria-label="Add new event">
           <PlusIcon className="w-5 h-5" />
         </button>
       </div>
@@ -47,21 +47,21 @@ const UpcomingEvents: React.FC<UpcomingEventsProps> = ({ events, onAddEvent, onD
           return (
             <div key={event.id} className="group">
               <div className="flex justify-between items-center mb-1">
-                 <h3 className="font-semibold text-indigo-300 text-sm truncate">{event.title}</h3>
-                 <button onClick={() => onDeleteEvent(event.id)} className="p-1 rounded-full text-gray-500 opacity-0 group-hover:opacity-100 hover:text-red-400 hover:bg-red-500/20 transition-all" aria-label="Delete event">
+                 <h3 className="font-semibold text-indigo-600 dark:text-indigo-300 text-sm truncate">{event.title}</h3>
+                 <button onClick={() => onDeleteEvent(event.id)} className="p-1 rounded-full text-gray-400 dark:text-gray-500 opacity-0 group-hover:opacity-100 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-500/20 transition-all" aria-label="Delete event">
                     <TrashIcon className="w-4 h-4" />
                  </button>
               </div>
-              <div className="relative w-full bg-gray-700/50 rounded-full h-6 flex items-center px-2 text-xs text-white overflow-hidden">
-                  <div className="absolute top-0 h-full bg-indigo-500/60 rounded-full" style={{ left: `${(startOffset / 90) * 100}%`, width: `${barWidth}%` }}></div>
+              <div className="relative w-full bg-gray-200/70 dark:bg-gray-700/50 rounded-full h-6 flex items-center px-2 text-xs text-white overflow-hidden">
+                  <div className="absolute top-0 h-full bg-indigo-500/80 dark:bg-indigo-500/60 rounded-full" style={{ left: `${(startOffset / 90) * 100}%`, width: `${barWidth}%` }}></div>
                   <span className="relative z-10 truncate">{event.start.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})} - {event.end.toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
               </div>
             </div>
           )
         }) : (
-          <div className="text-center py-10 border-2 border-dashed border-gray-700 rounded-lg">
-            <p className="text-gray-400">No upcoming events. 🗓️</p>
-            <p className="text-sm text-gray-500">Click the '+' button to plan something fun!</p>
+          <div className="text-center py-10 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg">
+            <p className="text-gray-500 dark:text-gray-400">No upcoming events. 🗓️</p>
+            <p className="text-sm text-gray-400 dark:text-gray-500">Click the '+' button to plan something fun!</p>
           </div>
         )}
       </div>

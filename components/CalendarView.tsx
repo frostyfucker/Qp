@@ -64,10 +64,10 @@ const CalendarMonth: React.FC<{
     const taskCount = taskMap.get(`${year}-${month}-${day}`) || 0;
 
     const dayClasses = `
-      relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-colors duration-200
+      relative w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-colors duration-200 text-gray-800 dark:text-gray-200
       ${isSelected ? 'bg-indigo-600 text-white font-bold shadow-md' : ''}
-      ${!isSelected && isToday ? 'bg-indigo-500 bg-opacity-25 text-indigo-300 font-semibold' : ''}
-      ${!isSelected && !isToday ? `hover:bg-gray-700 ${getTaskLoadClass(taskCount)}` : ''}
+      ${!isSelected && isToday ? 'bg-indigo-500/10 dark:bg-indigo-500/25 text-indigo-600 dark:text-indigo-300 font-semibold' : ''}
+      ${!isSelected && !isToday ? `hover:bg-gray-200 dark:hover:bg-gray-700 ${getTaskLoadClass(taskCount)}` : ''}
       ${!isSelected && !isToday && taskCount > 0 ? 'font-medium' : ''}
     `;
 
@@ -84,10 +84,10 @@ const CalendarMonth: React.FC<{
 
   return (
     <div className="p-4 flex-1">
-      <h3 className="text-lg font-semibold text-center mb-3 text-white">
+      <h3 className="text-lg font-semibold text-center mb-3 text-gray-900 dark:text-white">
         {monthDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
       </h3>
-      <div className="grid grid-cols-7 gap-1 text-center text-sm text-gray-400 mb-2">
+      <div className="grid grid-cols-7 gap-1 text-center text-sm text-gray-500 dark:text-gray-400 mb-2">
         {weekDays.map(day => <div key={day}>{day}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-y-1">
@@ -125,16 +125,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({ currentDate, setCurrentDate
   };
 
   return (
-    <div className="bg-gray-800 p-2 sm:p-6 rounded-2xl shadow-lg">
+    <div className="bg-white dark:bg-gray-800 p-2 sm:p-6 rounded-2xl shadow-lg">
       <div className="flex justify-between items-center mb-6 px-4 pt-4 sm:p-0">
-        <button onClick={goToPrevMonth} className="p-2 rounded-full hover:bg-gray-700 transition-colors">
-          <ChevronLeftIcon className="w-6 h-6 text-gray-400" />
+        <button onClick={goToPrevMonth} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <ChevronLeftIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
         </button>
-        <button onClick={goToToday} className="px-4 py-2 text-sm font-semibold text-indigo-300 bg-indigo-500 bg-opacity-25 rounded-lg hover:bg-opacity-40 transition-colors">
+        <button onClick={goToToday} className="px-4 py-2 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 dark:bg-indigo-500/25 rounded-lg hover:bg-opacity-20 dark:hover:bg-opacity-40 transition-colors">
           Today
         </button>
-        <button onClick={goToNextMonth} className="p-2 rounded-full hover:bg-gray-700 transition-colors">
-          <ChevronRightIcon className="w-6 h-6 text-gray-400" />
+        <button onClick={goToNextMonth} className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+          <ChevronRightIcon className="w-6 h-6 text-gray-500 dark:text-gray-400" />
         </button>
       </div>
       <div className="flex flex-col md:flex-row md:space-x-4">
@@ -143,7 +143,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ currentDate, setCurrentDate
         </div>
         
         <div className="flex-1 p-0.5 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg my-4 md:my-0">
-          <div className="h-full w-full bg-gray-800 rounded-lg">
+          <div className="h-full w-full bg-white dark:bg-gray-800 rounded-lg">
             <CalendarMonth monthDate={currentDate} selectedDate={selectedDate} onDateSelect={onDateSelect} tasks={tasks} />
           </div>
         </div>

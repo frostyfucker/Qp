@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import RSS from 'rss';
-import { getSortedPostsData } from '../../lib/posts';
+// FIX: The function `getSortedPostsData` does not exist. Replaced with `getPosts`.
+import { getPosts } from '../../lib/posts';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   const siteUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000';
@@ -13,7 +14,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     language: "en",
   });
 
-  const posts = getSortedPostsData();
+  const posts = getPosts();
   posts.forEach(post => {
     feed.item({
       title: post.title,

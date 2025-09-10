@@ -4,6 +4,8 @@ export enum Status {
   Done = 'Done',
 }
 
+export type Priority = 'Low' | 'Medium' | 'High';
+
 export interface Subtask {
   id: string;
   title: string;
@@ -22,6 +24,8 @@ export interface Task {
   startTime?: string;
   endTime?: string;
   subtasks: Subtask[];
+  priority: Priority;
+  notifications: boolean;
 }
 
 export interface Event {
@@ -36,5 +40,6 @@ export interface Post {
   id: string;
   title: string;
   date: string;
+  content: string;
   contentHtml?: string;
 }

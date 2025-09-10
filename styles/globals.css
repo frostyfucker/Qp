@@ -5,5 +5,5 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gray-900 text-gray-300;
+  @apply bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-300 transition-colors duration-300;
 }
